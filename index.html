@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="View dot Oil On Canvas files online">
+  <meta name="author" content="Arda Ozkal">
+
+  <title>Online OOC Viewer</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+    crossorigin="anonymous">
+  <link href="extrabootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-toggleable-md navbar-default fixed-top glorious">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#mainnavbar"
+      aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <a class="navbar-brand" href="index.html">OOC</a>
+
+    <div class="collapse navbar-collapse" id="mainnavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="index.html">View <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="convert.html">Convert</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/ardaozkal/OilOnCanvas-CSharp/releases/download/v1/ooc.exe">Download</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="extrabootstrap glorious">
+      <h1>View OOC Files online</h1>
+      <p class="lead">OOC stands for Oil On Canvas. It's a wastefully raw and sarcastic image format.<br>You can use this site to view OOC
+        files online.<br>All the work is done on your PC, nothing is sent to our servers.<br>You can right click and click save to export as PNG or JPEG file.</p>
+      <input type="file" id="files" name="files[]" multiple/><br><br>
+      <output id="list"></output>
+    </div>
+
+    <script>
+  function handleFileSelect(evt) {
+    var files = evt.target.files;
+    var diff = 0;
+    for (var i = 0;i<evt.target.files.length; i++) {
+    var f = files[i];
+    var reader = new FileReader();
+
+    reader.onload = function(e, callback) {
+        var span = document.createElement('span');
+        var filetextorig = e.target.result;
+        var arrayOfLines = filetextorig.match(/[^\r\n]+/g); 
+        var height = arrayOfLines.length;
+        var width = (arrayOfLines[1].split(',').length / 4);
+        var randomid = Math.floor(Math.random() * 10000) + diff; //dirty hack to allow multiple files
+        var filetext = filetextorig.replace(/(\r\n|\n|\r)/gm,","); //removes newlines
+        span.innerHTML = '<canvas id="canvas'+randomid+'" width="'+width+'" height="'+height+'" style="border:1px solid #000000;"></canvas><br><br>';
+        document.getElementById('list').insertBefore(span, null);
+        var ctx = document.getElementById('canvas'+randomid).getContext('2d');
+        var show = 0;
+        var partsOfStr = filetext.split(',');
+        var imgdata = ctx.getImageData(0,0, width, height);
+        var imgdatalen = imgdata.data.length;
+        for(var i=0;i<imgdatalen;i++){
+           imgdata.data[i] = partsOfStr[i];
+        }
+        ctx.putImageData(imgdata,0,0);
+        diff = diff + 1;
+    }
+
+    reader.readAsText(f);
+    }
+  }
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+    <noscript>Your Javascript is disabled, yo.</noscript>
+
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="../jquery.min.js"><\/script>')</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

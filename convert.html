@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Convert image files to OOC files online">
+  <meta name="author" content="Arda Ozkal">
+
+  <title>Online OOC Converter</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+    crossorigin="anonymous">
+  <link href="extrabootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-toggleable-md navbar-default fixed-top glorious">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#mainnavbar"
+      aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <a class="navbar-brand" href="index.html">OOC</a>
+
+    <div class="collapse navbar-collapse" id="mainnavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">View</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="convert.html">Convert <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/ardaozkal/OilOnCanvas-CSharp/releases/download/v1/ooc.exe">Download</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="extrabootstrap glorious">
+      <h1>Convert OOC Files online</h1>
+      <p class="lead">OOC stands for Oil On Canvas. It's a wastefully raw and sarcastic image format.<br>You can use this site to convert image files to OOC
+        files online.<br>All the work is done on your PC, nothing is sent to our servers.</p>
+      <input type="file" id="files" name="files[]" /><br><br>
+      <output id="list"></output>
+      <canvas id="tempcanvas" width="1" height="1" style="display: none;"></canvas>
+    </div>
+
+    <script>
+    var canvas = document.getElementById('tempcanvas');
+    var ctx = canvas.getContext('2d');
+
+    function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+    
+    function handleFileSelect(e) {
+    var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image();
+        img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+
+            //Conversion code:
+            var imgdata = ctx.getImageData(0,0, canvas.width, canvas.height);
+            var imgdatalen = imgdata.data.length;
+            var oocversion = "";
+            var nlthingy = 0;
+            for(var i=0;i<imgdatalen;i++)
+            {
+              oocversion += imgdata.data[i];
+              if (nlthingy == canvas.width*4)
+              {
+                oocversion += "\n";
+                nlthingy = 0;
+              }
+              else
+              {
+                oocversion += ",";
+                nlthingy+=1;
+              }
+            }
+            download('oocified.ooc', oocversion); //downloads as file
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(e.target.files[0]); 
+  }
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+    <noscript>Your Javascript is disabled, yo.</noscript>
+
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="../jquery.min.js"><\/script>')</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
